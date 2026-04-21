@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HIDProxBox — One keyboard. Four computers.</title>
+  <meta name="description" content="Open-source Raspberry Pi KVM proxy that routes keyboard and mouse to up to four computers over USB or Bluetooth. No drivers, no agents, nothing to install on the machines you control.">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://andycrawford.github.io/HIDProxBox/">
+  <meta property="og:title" content="HIDProxBox — One keyboard. Four computers. Zero software on the targets.">
+  <meta property="og:description" content="Open-source Raspberry Pi KVM proxy. Route keyboard and mouse to up to four computers over USB or Bluetooth — no drivers, no agents, nothing to install.">
+  <meta property="og:image" content="https://andycrawford.github.io/HIDProxBox/assets/social-preview.svg">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="HIDProxBox — One keyboard. Four computers. Zero software on the targets.">
+  <meta name="twitter:description" content="Open-source Raspberry Pi KVM proxy. Route keyboard and mouse to up to four computers over USB or Bluetooth.">
+  <meta name="twitter:image" content="https://andycrawford.github.io/HIDProxBox/assets/social-preview.svg">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- Design tokens (source of truth from branding/tokens.css) -->
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Theme init (before render to avoid flash) -->
+  <script>
+    (function() {
+      var saved = localStorage.getItem('theme');
+      if (saved === 'light') document.documentElement.dataset.theme = 'light';
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- ===== NAV ===== -->
+  <nav class="navbar">
+    <a href="#" class="navbar-logo" aria-label="HIDProxBox home">
+      <img src="assets/logo-dark.svg" alt="HIDProxBox" class="logo-dark" height="43">
+      <img src="assets/logo-light.svg" alt="HIDProxBox" class="logo-light" height="43">
+    </a>
+    <div class="navbar-links">
+      <a href="#features">Features</a>
+      <a href="#web-control-panel">Web Panel</a>
+      <a href="#use-cases">Use Cases</a>
+      <a href="#bom">BOM</a>
+      <a href="#get-started">Get Started</a>
+    </div>
+    <div class="navbar-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle light/dark mode">
+        <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <a href="https://github.com/andycrawford/HIDProxBox" class="btn btn--primary navbar-cta" target="_blank" rel="noopener">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        Get Started
+      </a>
+    </div>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <header class="hero bg-dots">
+    <div class="container hero-inner">
+      <img src="assets/logo-dark.svg" alt="HIDProxBox" class="hero-logo logo-dark" height="128">
+      <img src="assets/logo-light.svg" alt="HIDProxBox" class="hero-logo logo-light" height="128">
+
+      <p class="hero-tagline">One keyboard. Four computers. Zero software on the targets.</p>
+      <p class="hero-sub">Open-source Raspberry Pi KVM proxy — hardware-level USB and Bluetooth HID switching for up to four computers.</p>
+
+      <div class="hero-cta-row">
+        <a href="https://github.com/andycrawford/HIDProxBox" class="btn btn--primary btn--lg" target="_blank" rel="noopener">
+          View on GitHub →
+        </a>
+        <a href="#get-started" class="btn btn--ghost btn--lg">Read the Docs</a>
+      </div>
+
+      <div class="hero-badges">
+        <span class="badge">MIT License</span>
+        <span class="badge badge--blue">Raspberry Pi</span>
+        <span class="badge badge--cyan">4-Port KVM</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== FEATURES ===== -->
+  <section class="section section-surface" id="features">
+    <div class="container">
+      <h2 class="section-title">Feature Highlights</h2>
+      <p class="section-desc">Everything in the daemon, no third-party services required.</p>
+
+      <div class="features-grid">
+        <!-- INPUT cards (cyan) -->
+        <div class="card card--cyan">
+          <h3><span class="leading-dot" style="background:var(--color-cyan)"></span>4-Port Instant Switching</h3>
+          <p>Dedicated selector buttons with LED confirmation. Every computer stays USB-connected — zero warm-up delay on switch.</p>
+          <span class="feature-category" style="color:var(--color-cyan)">INPUT</span>
+        </div>
+
+        <div class="card card--cyan">
+          <h3><span class="leading-dot" style="background:var(--color-cyan)"></span>Wired + Wireless Input</h3>
+          <p>Accept keystrokes from a USB keyboard via evdev, or any Bluetooth HID keyboard. Toggle the active source with one button press.</p>
+          <span class="feature-category" style="color:var(--color-cyan)">INPUT</span>
+        </div>
+
+        <div class="card card--cyan">
+          <h3><span class="leading-dot" style="background:var(--color-cyan)"></span>Programmable Macros</h3>
+          <p>Map HID keystroke sequences — lock screen, screenshot, custom combos — to button short- or long-press actions via <code>config.py</code>.</p>
+          <span class="feature-category" style="color:var(--color-cyan)">INPUT</span>
+        </div>
+
+        <div class="card card--cyan">
+          <h3><span class="leading-dot" style="background:var(--color-cyan)"></span>Zero Target Software</h3>
+          <p>Each CH552T enumerates as a standard USB HID keyboard and mouse. Your computers never know it is a proxy.</p>
+          <span class="feature-category" style="color:var(--color-cyan)">INPUT</span>
+        </div>
+
+        <!-- OUTPUT cards (blue) -->
+        <div class="card card--blue">
+          <h3><span class="leading-dot" style="background:var(--color-blue)"></span>USB + Bluetooth Output</h3>
+          <p>Relay via CH552T HID devices over USB, or turn the Pi into a Bluetooth keyboard for cable-free control. Per-computer mode persists across reboots.</p>
+          <span class="feature-category" style="color:var(--color-blue)">OUTPUT</span>
+        </div>
+
+        <div class="card card--blue">
+          <h3><span class="leading-dot" style="background:var(--color-blue)"></span>Browser Control Panel</h3>
+          <p>Switch computers from any phone, tablet, or browser at <code>http://&lt;pi-ip&gt;:8080</code>. No app required — just your local network.</p>
+          <span class="feature-category" style="color:var(--color-blue)">OUTPUT</span>
+        </div>
+
+        <div class="card card--blue">
+          <h3><span class="leading-dot" style="background:var(--color-blue)"></span>Paste Text Entry</h3>
+          <p>Type or paste text into the browser panel and click <strong>Send as Keystrokes</strong> — the daemon replays it character by character over HID. Ideal for passwords at BIOS prompts, FDE screens, or VMs with isolated clipboards. Up to 2,000 characters per send.</p>
+          <span class="feature-category" style="color:var(--color-blue)">OUTPUT</span>
+        </div>
+
+        <div class="card card--blue">
+          <h3><span class="leading-dot" style="background:var(--color-blue)"></span>Optional Touchscreen</h3>
+          <p>Local tkinter GUI with tally lights and one-tap switching. Includes a built-in ZSA Keymapp launcher for ZSA keyboard users.</p>
+          <span class="feature-category" style="color:var(--color-blue)">OUTPUT</span>
+        </div>
+
+        <div class="card card--blue">
+          <h3><span class="leading-dot" style="background:var(--color-blue)"></span>Open-Source &amp; Hackable</h3>
+          <p>Producer-consumer architecture — add a new input source or output sink in a few dozen lines of Python. MIT licensed.</p>
+          <span class="feature-category" style="color:var(--color-blue)">OUTPUT</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== WEB CONTROL PANEL ===== -->
+  <section class="section bg-dots" id="web-control-panel">
+    <div class="container">
+      <h2 class="section-title">Browser Control Panel</h2>
+      <p class="section-desc">Full KVM control from any browser at <code>http://&lt;pi-ip&gt;:8080</code> — no app, no drivers.</p>
+
+      <div class="web-ui-showcase">
+        <div class="web-ui-screenshot">
+          <img src="screenshot-web-ui.png"
+               alt="HIDProxBox web control panel showing computer selector, input/output mode toggles, and the Paste Text entry card with a successful send confirmation"
+               width="360">
+        </div>
+        <div class="web-ui-details">
+          <h3 class="web-ui-feature-title">
+            <span class="leading-dot" style="background:var(--color-blue)"></span>
+            Paste Text Entry
+          </h3>
+          <p class="web-ui-feature-desc">Type or paste up to 2,000 characters and click <strong>Send as Keystrokes</strong>. The daemon replays each character as a USB HID key-down/key-up report — no clipboard access needed on the target machine.</p>
+
+          <ul class="web-ui-list">
+            <li>Passwords at BIOS / UEFI prompts</li>
+            <li>Full-disk encryption passphrases (LUKS, FileVault, BitLocker)</li>
+            <li>VMs with isolated clipboards</li>
+            <li>Headless machines without paste support</li>
+          </ul>
+
+          <div class="api-ref-block">
+            <span class="api-ref-label">API endpoint</span>
+            <pre><code>POST /api/paste
+Content-Type: application/json
+
+{"text": "your text here"}
+
+→ {"sent": 14, "skipped": 0}</code></pre>
+            <p class="api-ref-note">Returns <code>skipped</code> count for characters outside the US ANSI keymap. Max 2,000 chars per request. Select an active computer first.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== USE CASES ===== -->
+  <section class="section bg-dots" id="use-cases">
+    <div class="container">
+      <h2 class="section-title">Who It's For</h2>
+      <p class="section-desc">Real workflows, no sales pitch.</p>
+
+      <div class="usecases-grid">
+
+        <div class="card usecase-card usecase-card--cyan">
+          <span class="badge badge--cyan usecase-badge">Developer</span>
+          <h3>The Multi-Machine Developer</h3>
+          <p>Beefy workstation on the left, work laptop docked to the right, headless server in the rack. A single ergonomic keyboard across all three — no USB unplugging, no KVM lag, no extra software on the laptop you don't own.</p>
+          <div class="usecase-callout">
+            <span class="callout-dot" style="background:var(--color-cyan)"></span>
+            Button 1 → workstation · Button 2 → laptop (BT) · hold → SSH macros
+          </div>
+        </div>
+
+        <div class="card usecase-card usecase-card--blue">
+          <span class="badge badge--blue usecase-badge">Home Office</span>
+          <h3>The Clean-Desk Home Office</h3>
+          <p>Personal Mac beside a company-issued Windows PC. Software KVMs break after updates, need admin rights, and IT policy won't allow them. HIDProxBox is purely hardware from the targets' perspective.</p>
+          <div class="usecase-callout">
+            <span class="callout-dot" style="background:var(--color-blue)"></span>
+            BT output → Mac stays completely cable-free
+          </div>
+        </div>
+
+        <div class="card usecase-card usecase-card--cyan">
+          <span class="badge badge--cyan usecase-badge">Maker</span>
+          <h3>The Maker Workbench</h3>
+          <p>Building and flashing firmware across a Pi, an STM32 discovery board, and an x86 test machine — all headless, all needing occasional keyboard input. HIDProxBox lives on a shelf, wired into all three.</p>
+          <div class="usecase-callout">
+            <span class="callout-dot" style="background:var(--color-cyan)"></span>
+            Touchscreen on project enclosure front panel
+          </div>
+        </div>
+
+        <div class="card usecase-card usecase-card--blue">
+          <span class="badge badge--blue usecase-badge">Security</span>
+          <h3>The Password Problem</h3>
+          <p>BIOS screens, full-disk encryption prompts, and VMs with isolated clipboards all block clipboard paste. The web panel's Paste Text feature types your password character by character over HID — no clipboard access needed on the target.</p>
+          <div class="usecase-callout">
+            <span class="callout-dot" style="background:var(--color-blue)"></span>
+            Paste in browser → keystrokes arrive at the target instantly
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== BOM ===== -->
+  <section class="section section-surface" id="bom">
+    <div class="container container--narrow">
+      <h2 class="section-title">Bill of Materials</h2>
+      <p class="section-desc">Full 4-port build under $100.</p>
+
+      <div class="card bom-card">
+        <table class="bom-table">
+          <thead>
+            <tr>
+              <th>Component</th>
+              <th>Qty</th>
+              <th class="align-right">Approx. Cost</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="row-dot" style="background:var(--color-cyan)"></span>Raspberry Pi Zero 2W or Pi 4</td>
+              <td>1</td>
+              <td class="align-right">$15–$55</td>
+            </tr>
+            <tr class="row-alt">
+              <td><span class="row-dot" style="background:var(--color-blue)"></span>CH552T microcontrollers</td>
+              <td>4</td>
+              <td class="align-right">&lt; $1 each</td>
+            </tr>
+            <tr>
+              <td><span class="row-dot" style="background:var(--color-blue)"></span>USB-serial adapters (CP2102 / CH340)</td>
+              <td>4</td>
+              <td class="align-right">~$1–$2 each</td>
+            </tr>
+            <tr class="row-alt">
+              <td><span class="row-dot" style="background:var(--color-text-dim)"></span>Tactile buttons + LEDs + resistors</td>
+              <td>—</td>
+              <td class="align-right">&lt; $5</td>
+            </tr>
+            <tr>
+              <td><span class="row-dot" style="background:var(--color-text-dim)"></span>Optional Pi touchscreen (3.5–7″)</td>
+              <td>1</td>
+              <td class="align-right">$15–$30</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="bom-total">
+              <td colspan="2">Total (full 4-port build)</td>
+              <td class="align-right bom-total-price">under $100</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <p class="bom-note">CH552T expects 3.3V logic — connect via CP2102 or CH340 USB-serial adapters. Button bounce time, long-press threshold, and LED pins are all configurable in <code>config.py</code>.</p>
+    </div>
+  </section>
+
+  <!-- ===== GET STARTED ===== -->
+  <section class="section bg-dots" id="get-started">
+    <div class="container container--narrow">
+      <h2 class="section-title">Get Started</h2>
+      <p class="section-desc">Clone, install, run. Flash the firmware. Wire and configure.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h3>Clone and install</h3>
+            <pre><code>git clone https://github.com/andycrawford/HIDProxBox.git /opt/hidproxbox
+pip3 install evdev pyserial pybluez --break-system-packages
+sudo apt-get install bluetooth bluez python3-dbus python3-gi</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h3>Flash the firmware</h3>
+            <p>Flash <code>firmware/hidproxbox.ino</code> to each CH552T using the Arduino IDE with CH55x board support. One CH552T per computer.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h3>Wire and configure</h3>
+            <p>Connect CH552T units via USB-serial adapters. Wire tactile buttons and LEDs to GPIO. Update serial ports, GPIO pins, and macros in <code>config.py</code>.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h3>Run the daemon</h3>
+            <pre><code>sudo python3 /opt/hidproxbox/daemon.py --foreground
+
+# Or install as a systemd service
+sudo systemctl start hidproxbox
+sudo systemctl enable hidproxbox</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA ===== -->
+  <section class="section-cta bg-dots">
+    <div class="container cta-inner">
+      <span class="badge" style="--badge-accent:var(--color-cyan); border-color:var(--color-border); margin-bottom:24px">Open Source · MIT License</span>
+      <h2 class="cta-title">Build yours this weekend.</h2>
+      <p class="cta-sub">All firmware, all code, all wiring diagrams — in the repo.</p>
+      <div class="cta-btns">
+        <a href="https://github.com/andycrawford/HIDProxBox" class="btn btn--primary btn--lg" target="_blank" rel="noopener">Clone on GitHub →</a>
+        <a href="https://github.com/andycrawford/HIDProxBox/blob/master/README.md" class="btn btn--ghost btn--lg" target="_blank" rel="noopener">Browse the Docs</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span class="footer-copy">© 2026 HIDProxBox — MIT License</span>
+      <nav class="footer-links" aria-label="Footer navigation">
+        <a href="https://github.com/andycrawford/HIDProxBox" target="_blank" rel="noopener">GitHub</a>
+        <span class="footer-sep" aria-hidden="true"></span>
+        <a href="https://github.com/andycrawford/HIDProxBox/blob/master/README.md" target="_blank" rel="noopener">Docs</a>
+        <span class="footer-sep" aria-hidden="true"></span>
+        <a href="https://github.com/andycrawford/HIDProxBox/tree/master/firmware" target="_blank" rel="noopener">Firmware</a>
+        <span class="footer-sep" aria-hidden="true"></span>
+        <a href="https://github.com/andycrawford/HIDProxBox/issues" target="_blank" rel="noopener">Issues</a>
+      </nav>
+      <span class="footer-pi">Built on Raspberry Pi</span>
+    </div>
+  </footer>
+
+  <script>
+    // Theme toggle
+    var btn = document.getElementById('themeToggle');
+    btn.addEventListener('click', function() {
+      var html = document.documentElement;
+      if (html.dataset.theme === 'light') {
+        delete html.dataset.theme;
+        localStorage.removeItem('theme');
+      } else {
+        html.dataset.theme = 'light';
+        localStorage.setItem('theme', 'light');
+      }
+    });
+  </script>
+
+</body>
+</html>

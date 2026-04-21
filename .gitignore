@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+
+# Runtime / secrets
+/var/run/hidproxbox.pid
+*.log
+bt_output_pairs.json
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Arduino build artefacts
+firmware/**/*.elf
+firmware/**/*.hex
+firmware/**/*.bin
+firmware/**/build/
