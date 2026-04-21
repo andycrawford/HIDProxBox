@@ -6,7 +6,7 @@ Three variants across two tickets (DVI-35 original · DVI-38 enhanced):
 |---|---|---|---|
 | Desktop original | `enclosure.scad` | 175 × 90 × 32 mm | DVI-35 |
 | Desktop v2 (enhanced) | `enclosure_desktop_v2.scad` | 175 × 90 × 22–32 mm (tilt) | DVI-38 |
-| Handheld | `enclosure_handheld.scad` | 120 × 62 × 22 mm | DVI-38 |
+| Handheld | `enclosure_handheld.scad` | 90 × 50 × 30 mm | DVI-38 |
 
 See `design-rationale.md` for the motivation behind v2 changes and handheld design decisions.
 
@@ -58,13 +58,15 @@ See `design-rationale.md` for the motivation behind v2 changes and handheld desi
 
 ---
 
-## Handheld (`enclosure_handheld.scad`)
+## Handheld (`enclosure_handheld.scad`) — rev 2
+
+Redesigned per DVI-39 hardware constraint spec.  See `design-rationale.md` for full change log.
 
 ### Parts
 
 | File | Description | Print orientation |
 |---|---|---|
-| `stl/handheld_bottom.stl` | Shell with grip ridges, ports on bottom + right | Floor face down |
+| `stl/handheld_bottom.stl` | Shell with grip ridges, back-panel ports, left-side vents | Floor face down |
 | `stl/handheld_top.stl` | Flat cap | **Flip 180°** — outer face down |
 
 ### Print settings
@@ -81,29 +83,30 @@ See `design-rationale.md` for the motivation behind v2 changes and handheld desi
 
 ### Notes
 
-- Port placement: USB ports exit the bottom edge; USB-C power enters the right side. Orient accordingly in the slicer.
-- Grip ridges: the three triangular ridges per side are part of the shell body — do not fill or remove them.
-- Display opening is 34 × 14 mm (1.3" OLED SH1106 or SSD1306). Module PCB is ~36 × 16 mm and sits inside on hot-glue standoffs.
-- 2-computer variant only (2× CH552T + 2× USB-A output + 1× USB-A input).
+- Port placement: 4× USB-A output + 1× USB-A input exit the back panel; USB-C power/charge enters the right side.
+- Grip ridges: three triangular ridges per long side — do not fill or remove them.
+- No display opening (display omitted at this form factor — see DVI-39 §11).
+- Battery void: enable `SHOW_BATTERY_VOID = true` in the SCAD before printing to verify battery fit. Actual battery cutout TBD once DVI-39 battery spec is confirmed.
 
 ### Assembly
 
-1. Heat-set 4× M2.5 inserts into corner bosses (4.5 mm deep, boss height 15 mm).
-2. Install Pi Zero 2W + 2× CH552T boards on 2.5 mm floor. Both boards fit within 120 × 62 mm interior with ~4 mm clearance per side.
-3. Route USB cables through bottom cutouts before seating PCBs.
-4. Thread OLED ribbon cable through display opening; secure module with hot glue.
-5. Seat top cap; fasten with 4× M2.5 × 8 mm pan-head screws.
+1. Heat-set 4× M2.5 inserts into corner bosses (4.5 mm deep pockets, boss height 20 mm).
+2. Install Pi Zero 2W on 3 mm standoffs above the 2.5 mm floor.
+3. Install 4× CH552T boards on 10 mm standoffs above the Pi.
+4. Route USB cables to back panel before seating top cap.
+5. Install battery once spec confirmed (void located beside Pi Zero 2W footprint).
+6. Seat top cap; fasten with 4× M2.5 × 8 mm pan-head screws.
 
 ### Hardware BOM (handheld)
 
 | Qty | Part |
 |---|---|
-| 4 | M2.5 × 3 mm OD4 heat-set inserts |
+| 4 | M2.5 × OD4 × 3 mm heat-set inserts |
 | 4 | M2.5 × 8 mm pan-head machine screws |
-| 1 | 1.3" OLED module (SH1106 or SSD1306, 128×64) |
-| 2 | 12 mm momentary push-button caps (select) |
-| 1 | 12 × 6 mm momentary push-button (mode) |
-| 2 | 3 mm LED (status) |
+| 4 | 12 mm momentary push-button caps (select, one per computer) |
+| 2 | 9 × 4 mm momentary push-button (mode) |
+| 4 | 3 mm LED (status, one per computer) |
+| 1 | LiPo battery — chemistry/capacity TBD (DVI-39 §8) |
 
 ---
 

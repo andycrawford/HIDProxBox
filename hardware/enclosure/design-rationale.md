@@ -33,52 +33,63 @@ The tilt is implemented as a hull between a 24 mm front cross-section and a 32 m
 
 ---
 
-## Handheld (`enclosure_handheld.scad`)
+## Handheld (`enclosure_handheld.scad`) — rev 2
 
-**Goal:** A pocket-sized 2-computer variant for field use, battery-adjacent power, and one-handed operation.
+**Goal:** Redesigned to comply with the DVI-39 hardware constraint spec (received 2026-04-21).
+Previous rev (120 × 62 × 22 mm, 2-computer) was too large and under-specified.
+
+### Changes from rev 1
+
+| Feature | Rev 1 (DVI-38 initial) | Rev 2 (DVI-39 constrained) | Rationale |
+|---|---|---|---|
+| Footprint | 120 × 62 mm | **90 × 50 mm** | DVI-39 specifies ≤ 90 × 50 mm target |
+| Height | 22 mm | **30 mm** | Extra depth needed for 4× CH552T stack + battery headroom |
+| Computer support | 2 (2× CH552T) | **4** (4× CH552T) | DVI-39 §1 — system requires 4 output computers |
+| Select buttons | 2× | **4×** (two paired groups) | DVI-39 §11 — minimum 4× select |
+| Status LEDs | 2× (3 mm) | **4×** (3 mm, one per computer) | Per spec: "same as desktop if space allows" |
+| USB-A outputs | 2 (bottom-exit) | **4 (back panel)** | 4 outputs + 1 input = 5 ports; back-exit is cleaner for 5 cables |
+| Battery | None | **Placeholder void** (TBD) | DVI-39 §8 / §11 — required; chemistry/capacity unresolved |
+| Display | 1.3" OLED | **Omitted** | No space at 90 × 50 mm; spec marks it optional at this form factor |
 
 ### Design decisions
 
-#### Form factor: 120 × 62 × 22 mm candy-bar
+#### Form factor: 90 × 50 × 30 mm
 
-- Pi Zero 2W (65 × 30 mm) is the smallest Pi with adequate compute and built-in BT/WiFi
-- 2-computer variant keeps the footprint to 2× CH552T boards (~40 × 15 mm each)
-- 22 mm height accommodates the board stack + cables with a 2.5 mm floor and 2 mm lid
-- 120 mm length fits a normal adult hand without being longer than a phone
+- Meets the ≤ 90 × 50 mm footprint target from DVI-39 exactly at the boundary
+- 30 mm height (vs. 22 mm rev 1) provides interior clearance for Pi Zero 2W + 4× CH552T on 10 mm standoffs + battery void: floor (2.5 mm) + Pi standoffs (~8 mm) + CH552T stack (~13 mm above Pi) = ~23.5 mm stack, plus lid (2 mm) = 25.5 mm → 30 mm shell gives 4.5 mm headroom for cables
+- Pi Zero 2W (65 × 30 mm) fits within 86 × 46 mm interior pocket
 
-#### Port placement: bottom-exit
+#### Button layout: paired groups
 
-All USB ports (keyboard input + 2× output) exit through the bottom edge rather than a rear face. Rationale:
-- Handheld use means cables must exit downward (toward a desk/bag) — rear-exit cables create awkward slack when held
-- Keeps the front face clean (display + buttons only) and the sides unobstructed for grip
-- USB-C power enters the right side (thumb-side for right-hand grip) so the power cable does not interfere with the left-hand-grippable left side
+4 select buttons are split into two visual groups of 2 (computers 1+2 on left, 3+4 on right) with a 22 mm inter-group gap on the front face. The 2 mode buttons are centred in that gap at a lower Z height. This mirrors the logical pairing used on the desktop and makes one-thumb selection easier.
 
-#### Grip ridges
+#### Port placement: back-panel exit
 
-Three triangular ridges on each long side (left/right walls). These add 0.8 mm of protrusion and prevent the device from slipping when held. The triangular cross-section is self-cleaning (no debris traps) and adds minimal material.
+5 USB-A ports (4 outputs + 1 input) exit the back panel. Rationale:
+- 5 cables via the bottom edge creates cable-management chaos; back-panel grouping is cleaner
+- USB-C power remains on the right side (unchanged from rev 1) for one-handed power-on access
 
-#### 1.3" OLED display (34 × 14 mm opening)
+#### Battery placeholder
 
-The 1.3" SH1106/SSD1306 OLED is the smallest display that can show two lines of legible text for active-computer status. The display opening is positioned left-of-centre to leave room for two select buttons on the right of the same face.
+DVI-39 §11 defers battery chemistry and capacity to a future decision. The shell reserves interior space beside the Pi for a slim LiPo (placeholder: 18 × 38 × 7 mm). Enable `SHOW_BATTERY_VOID = true` in the SCAD to visualise the reserved volume. Final cutout geometry and PCB/connector routing TBD once the battery spec is confirmed.
 
-#### M2.5 fasteners
+#### M2.5 fasteners (retained)
 
-M3 bosses are too large for a 62 × 120 mm shell at 2 mm walls. M2.5 heat-set inserts (OD ~4 mm) fit a 3.8 mm outer boss with 1 mm wall margin. Boss height is 15 mm — sufficient for a 4.5 mm insert pocket plus clamping depth.
+M3 bosses are too large for a 50 × 90 mm shell at 2 mm walls. M2.5 heat-set inserts (OD ~4 mm) fit a 3.8 mm outer boss with 1 mm wall margin. Boss height increased to 20 mm (from 15 mm) to match the taller 30 mm shell.
 
-#### Corner radius: 4 mm
+#### Corner radius: 4 mm (retained)
 
-Larger than desktop v2 (2.5 mm) because handheld ergonomics benefit from a more rounded profile; sharp corners are uncomfortable to grip. 4 mm is the practical maximum that still leaves flat wall area for the vent slots and port cutouts.
+Handheld ergonomics benefit from a more rounded profile than the desktop's 2.5 mm. 4 mm is the practical maximum that still leaves flat wall area for vent slots and port cutouts.
 
-### Hardware assumptions (verify with Systems Developer before STL export)
+### Hardware assumptions per DVI-39 spec
 
-| Component | Assumed dimension | Source |
+| Component | Spec dimension | DVI-39 ref |
 |---|---|---|
-| Pi Zero 2W PCB | 65 × 30 mm | Raspberry Pi datasheet |
-| CH552T breakout board | ~40 × 15 mm | Manufacturer listing |
-| 1.3" OLED module | 36 × 16 mm module; 34 × 14 mm active | Typical AliExpress/Adafruit SH1106 |
-| 12 mm tactile button cap | Ø12 mm, 9 mm travel | Standard momentary push-button |
-
-If the actual CH552T board is taller (some variants are 20 mm wide), interior height may need to increase from 22 to 26 mm, increasing weight by ~15 g.
+| Raspberry Pi Zero 2 W | 65 × 30 mm | §11 |
+| CH552T breakout board | ~40 × 15 mm (4× required) | §1 |
+| Select button cap | 12 mm dia (handheld; spec unspecified) | §11 |
+| Battery | TBD — chemistry/capacity unresolved | §8 / §11 |
+| Display | Omitted (optional per spec) | §11 |
 
 ---
 
