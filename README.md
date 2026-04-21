@@ -518,20 +518,22 @@ Open this URL in any browser on your local network to get a dark-themed control 
 | `POST` | `/api/computer/<1–4>` | Select computer *n*; returns updated status JSON |
 | `POST` | `/api/input/toggle` | Toggle USB ↔ BT input; returns updated status JSON |
 | `POST` | `/api/output/toggle` | Toggle USB ↔ BT output; returns updated status JSON |
-| `POST` | `/api/paste` | Type arbitrary text on the active computer; body: `{"text": "..."}` |
+| `POST` | `/api/paste` | Type arbitrary text on the active computer; body: `{"text": "..."}` (max 2000 chars); returns `{"sent": N, "skipped": N}` |
 
 The HTML panel polls `/api/status` every second and highlights the active computer and mode buttons. A connection indicator turns red when the daemon cannot be reached.
 
 ### Paste Text Entry
 
-The web control panel includes a **Paste** section that lets you type or paste any text into a browser text box and send it as keystrokes to the active computer — no clipboard sharing or remote agent required.
+The web control panel includes a **Paste Text** card that lets you type or paste any text into a browser text area and send it as keystrokes to the active computer — no clipboard sharing or remote agent required.
 
 **How it works:**
 
 1. Open the control panel at `http://<pi-ip>:8080/`
 2. Scroll to the **Paste Text** card
-3. Type or paste the text you want to send into the text area
-4. Click **Send** — the daemon replays the text character by character as USB or Bluetooth HID keyboard events on the active computer
+3. Type or paste the text you want to send into the text area (up to 2,000 characters)
+4. Click **Send as Keystrokes** — the daemon replays the text character by character as USB or Bluetooth HID keyboard events on the active computer
+
+The panel reports how many characters were sent and how many were skipped. Characters outside the standard US ANSI printable set (letters, digits, punctuation, whitespace, Enter) are skipped and counted in the `skipped` field.
 
 **Common use cases:**
 
@@ -542,13 +544,14 @@ The web control panel includes a **Paste** section that lets you type or paste a
 **API usage:**
 
 ```bash
-# Type "hello world" on whichever computer is currently active
+# Type "hello world" followed by Enter on the active computer
 curl -s -X POST http://<pi-ip>:8080/api/paste \
   -H "Content-Type: application/json" \
   -d '{"text": "hello world\n"}'
+# → {"sent": 12, "skipped": 0}
 ```
 
-The endpoint returns the standard status JSON `{active_computer, input_mode, output_mode}` on success.
+On error the endpoint returns `{"error": "text too long (max 2000 chars)"}` with HTTP 400.
 
 > **Security note:** The web UI has no authentication. Bind to `127.0.0.1` in `config.py` if you want to prevent network access.
 
