@@ -85,7 +85,6 @@ pre code { background: none; padding: 0; color: var(--color-text-muted); }
 }
 
 .navbar-logo { display: flex; align-items: center; }
-.navbar-logo img { display: block; }
 
 .navbar-links {
   display: flex;
@@ -183,7 +182,6 @@ pre code { background: none; padding: 0; color: var(--color-text-muted); }
   margin-inline: auto;
 }
 .hero-logo {
-  display: block;
   margin-bottom: var(--space-8);
 }
 .hero-tagline {
