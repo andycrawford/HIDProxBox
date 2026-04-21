@@ -173,19 +173,6 @@ module y_rect_cutter(w, h, xc, zc, y_start, len) {
         cube([w, len, h]);
 }
 
-// X-direction rounded-rect cutter (side wall, stadium cross-section in YZ)
-module x_rounded_rect_cutter(rw, rh, yc, zc, x_start, len) {
-    r = rh / 2;
-    straight = rw - rh;
-    // Two cylinders along X, separated in Y
-    c1 = translate([x_start, yc - straight/2, zc])
-        rotate([0, 90, 0]) cylinder(r=r, h=len);
-    translate([x_start, yc - straight/2, zc])
-        rotate([0, 90, 0]) cylinder(r=r, h=len);
-    translate([x_start, yc + straight/2, zc])
-        rotate([0, 90, 0]) cylinder(r=r, h=len);
-}
-
 /* ── Front face cutouts ─────────────────────────────────────────────── */
 module front_cutouts() {
     y0  = -1;
