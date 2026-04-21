@@ -31,6 +31,7 @@ A 4-port Bluetooth/USB HID KVM proxy built on a Raspberry Pi and four CH552T mic
 6. [Configuration](#configuration)
 7. [Running the Daemon](#running-the-daemon)
 8. [Web Control Panel](#web-control-panel)
+   - [Paste Text Entry](#paste-text-entry)
 9. [Local Touchscreen Display](#local-touchscreen-display)
 10. [Operation](#operation)
 11. [HID Macros](#hid-macros)
@@ -517,8 +518,37 @@ Open this URL in any browser on your local network to get a dark-themed control 
 | `POST` | `/api/computer/<1–4>` | Select computer *n*; returns updated status JSON |
 | `POST` | `/api/input/toggle` | Toggle USB ↔ BT input; returns updated status JSON |
 | `POST` | `/api/output/toggle` | Toggle USB ↔ BT output; returns updated status JSON |
+| `POST` | `/api/paste` | Type arbitrary text on the active computer; body: `{"text": "..."}` |
 
 The HTML panel polls `/api/status` every second and highlights the active computer and mode buttons. A connection indicator turns red when the daemon cannot be reached.
+
+### Paste Text Entry
+
+The web control panel includes a **Paste** section that lets you type or paste any text into a browser text box and send it as keystrokes to the active computer — no clipboard sharing or remote agent required.
+
+**How it works:**
+
+1. Open the control panel at `http://<pi-ip>:8080/`
+2. Scroll to the **Paste Text** card
+3. Type or paste the text you want to send into the text area
+4. Click **Send** — the daemon replays the text character by character as USB or Bluetooth HID keyboard events on the active computer
+
+**Common use cases:**
+
+- Entering long, complex passwords on a machine where clipboard paste is unavailable (BIOS screens, full-disk encryption prompts, VMs with isolated clipboards)
+- Pushing a one-time setup command to a headless server during initial provisioning
+- Sending the same text to multiple computers in sequence by switching computers between sends
+
+**API usage:**
+
+```bash
+# Type "hello world" on whichever computer is currently active
+curl -s -X POST http://<pi-ip>:8080/api/paste \
+  -H "Content-Type: application/json" \
+  -d '{"text": "hello world\n"}'
+```
+
+The endpoint returns the standard status JSON `{active_computer, input_mode, output_mode}` on success.
 
 > **Security note:** The web UI has no authentication. Bind to `127.0.0.1` in `config.py` if you want to prevent network access.
 
