@@ -506,6 +506,8 @@ http://<pi-ip-address>:8080/
 
 Open this URL in any browser on your local network to get a dark-themed control panel.
 
+![HIDProxBox web control panel](docs/screenshot-web-ui.png)
+
 ### Endpoints
 
 | Method | Path | Description |
@@ -541,6 +543,8 @@ python3 /opt/hidproxbox/display.py --fullscreen
 ```
 
 ### What the display shows
+
+![HIDProxBox local display](docs/screenshot-display.png)
 
 | Region | Content |
 |--------|---------|
