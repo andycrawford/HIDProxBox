@@ -1,0 +1,260 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" width="900" height="600">
+  <title>HIDProxBox Enclosure — Option A: Compact Slab</title>
+  <defs>
+    <pattern id="dotsA" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="12" cy="12" r="0.7" fill="#1E2D45" opacity="0.8"/>
+    </pattern>
+    <linearGradient id="gA-front" x1="0" y1="270" x2="0" y2="360" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#2A3F5C"/>
+      <stop offset="100%" stop-color="#1A2A3E"/>
+    </linearGradient>
+    <linearGradient id="gA-side" x1="455" y1="0" x2="565" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1A2A3E"/>
+      <stop offset="100%" stop-color="#0C1825"/>
+    </linearGradient>
+    <linearGradient id="gA-top" x1="0" y1="270" x2="0" y2="207" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1E2D40"/>
+      <stop offset="100%" stop-color="#253A55"/>
+    </linearGradient>
+    <filter id="ledA" x="-150%" y="-150%" width="400%" height="400%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Canvas background + dot grid -->
+  <rect width="900" height="600" fill="#090D1A"/>
+  <rect width="900" height="600" fill="url(#dotsA)"/>
+
+  <!-- Circuit trace accents -->
+  <path d="M 0 555 L 45 555 L 45 525 L 75 525" stroke="#1E2D45" stroke-width="1.5" fill="none" opacity="0.5"/>
+  <circle cx="75" cy="525" r="3" fill="#1E2D45" opacity="0.5"/>
+  <path d="M 45 525 L 45 500 L 22 500" stroke="#1E2D45" stroke-width="1.5" fill="none" opacity="0.5"/>
+  <path d="M 860 90 L 860 130 L 880 130" stroke="#1E2D45" stroke-width="1.5" fill="none" opacity="0.5"/>
+
+  <!-- ─── HEADER ─────────────────────────────────────────── -->
+  <text x="45" y="40" font-family="JetBrains Mono, Fira Code, monospace" font-size="20" font-weight="700" fill="#F1F5F9">Option A — Compact Slab</text>
+  <text x="45" y="60" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#94A3B8">Traditional KVM form factor · 175 × 90 × 32 mm · Raspberry Pi horizontal</text>
+  <rect x="782" y="24" width="88" height="24" rx="4" fill="#1E293B" stroke="#3B82F6" stroke-width="1"/>
+  <text x="826" y="40" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#3B82F6" text-anchor="middle">1 of 3</text>
+  <line x1="45" y1="72" x2="875" y2="72" stroke="#334155" stroke-width="1"/>
+
+  <!-- ─── 3D BOX ──────────────────────────────────────────
+       Front face: (85,270)→(455,270)→(455,360)→(85,360) [370×90]
+       Right side: (455,270)→(565,207)→(565,297)→(455,360)
+       Top face:   (85,270)→(455,270)→(565,207)→(195,207)
+       D=120px: D_h=104, D_v=60
+  ─────────────────────────────────────────────────────── -->
+
+  <!-- Top face -->
+  <polygon points="85,270 455,270 565,207 195,207" fill="url(#gA-top)" stroke="#334155" stroke-width="1.5"/>
+  <line x1="195" y1="207" x2="565" y2="207" stroke="#3D5270" stroke-width="1.5"/>
+
+  <!-- Right side face -->
+  <polygon points="455,270 565,207 565,297 455,360" fill="url(#gA-side)" stroke="#334155" stroke-width="1.5"/>
+
+  <!-- Front face -->
+  <rect x="85" y="270" width="370" height="90" fill="url(#gA-front)" stroke="#334155" stroke-width="1.5"/>
+  <line x1="85" y1="271" x2="455" y2="271" stroke="#4A6080" stroke-width="1.5"/>
+  <line x1="85" y1="359" x2="455" y2="359" stroke="#0C1825" stroke-width="2"/>
+
+  <!-- ─── FRONT FACE ELEMENTS ──────────────────────────── -->
+
+  <!-- Display bezel (left ~40%) -->
+  <rect x="97" y="277" width="142" height="76" rx="2" fill="#0D1824" stroke="#253040" stroke-width="1.5"/>
+  <!-- Screen -->
+  <rect x="101" y="281" width="134" height="68" rx="1" fill="#070F1C"/>
+  <rect x="101" y="281" width="134" height="68" rx="1" fill="#0A1C38" opacity="0.25"/>
+
+  <!-- Screen: top bar -->
+  <rect x="101" y="281" width="134" height="13" rx="1" fill="#0D1E35"/>
+  <text x="168" y="291" font-family="Inter, sans-serif" font-size="7" font-weight="600" fill="#94A3B8" text-anchor="middle">HIDProxBox</text>
+  <circle cx="228" cy="287" r="3" fill="#22D3EE"/>
+
+  <!-- Screen: tally indicators -->
+  <rect x="104" y="297" width="28" height="22" rx="2" fill="#c0253e"/>
+  <text x="118" y="312" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">1</text>
+  <rect x="136" y="297" width="28" height="22" rx="2" fill="#0a1e35"/>
+  <text x="150" y="312" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#475569" text-anchor="middle">2</text>
+  <rect x="168" y="297" width="28" height="22" rx="2" fill="#0a1e35"/>
+  <text x="182" y="312" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#475569" text-anchor="middle">3</text>
+  <rect x="200" y="297" width="28" height="22" rx="2" fill="#0a1e35"/>
+  <text x="214" y="312" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#475569" text-anchor="middle">4</text>
+
+  <!-- Screen: status row -->
+  <rect x="104" y="323" width="56" height="11" rx="1" fill="#0D2018"/>
+  <text x="132" y="331" font-family="Inter, sans-serif" font-size="6" font-weight="600" fill="#22D3EE" text-anchor="middle">IN: USB</text>
+  <rect x="165" y="323" width="65" height="11" rx="1" fill="#0D1832"/>
+  <text x="197" y="331" font-family="Inter, sans-serif" font-size="6" font-weight="600" fill="#3B82F6" text-anchor="middle">OUT: USB</text>
+
+  <!-- Screen: Keymapp row -->
+  <rect x="104" y="339" width="127" height="7" rx="1" fill="#3B1060" opacity="0.8"/>
+  <text x="167" y="345" font-family="Inter, sans-serif" font-size="5.5" fill="#C084FC" text-anchor="middle">ZSA Keymapp ▶</text>
+
+  <!-- Separator groove -->
+  <line x1="247" y1="276" x2="247" y2="354" stroke="#253040" stroke-width="2"/>
+  <line x1="246" y1="276" x2="246" y2="354" stroke="#3D5270" stroke-width="0.5" opacity="0.4"/>
+
+  <!-- 4 computer select buttons -->
+  <!-- Button 1 (ACTIVE — cyan LED lit) -->
+  <circle cx="275" cy="315" r="18" fill="#111E30" stroke="#253040" stroke-width="1.5"/>
+  <circle cx="275" cy="315" r="13" fill="#0F1A28" stroke="#22D3EE" stroke-width="1.5"/>
+  <text x="275" y="319" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#22D3EE" text-anchor="middle">1</text>
+  <circle cx="275" cy="281" r="5" fill="#22D3EE" filter="url(#ledA)"/>
+  <circle cx="275" cy="281" r="3" fill="#CCFFFF"/>
+
+  <!-- Button 2 -->
+  <circle cx="315" cy="315" r="18" fill="#111E30" stroke="#253040" stroke-width="1.5"/>
+  <circle cx="315" cy="315" r="13" fill="#0F1A28" stroke="#334155" stroke-width="1"/>
+  <text x="315" y="319" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#475569" text-anchor="middle">2</text>
+  <circle cx="315" cy="281" r="5" fill="#152030" stroke="#334155" stroke-width="1"/>
+
+  <!-- Button 3 -->
+  <circle cx="355" cy="315" r="18" fill="#111E30" stroke="#253040" stroke-width="1.5"/>
+  <circle cx="355" cy="315" r="13" fill="#0F1A28" stroke="#334155" stroke-width="1"/>
+  <text x="355" y="319" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#475569" text-anchor="middle">3</text>
+  <circle cx="355" cy="281" r="5" fill="#152030" stroke="#334155" stroke-width="1"/>
+
+  <!-- Button 4 -->
+  <circle cx="395" cy="315" r="18" fill="#111E30" stroke="#253040" stroke-width="1.5"/>
+  <circle cx="395" cy="315" r="13" fill="#0F1A28" stroke="#334155" stroke-width="1"/>
+  <text x="395" y="319" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#475569" text-anchor="middle">4</text>
+  <circle cx="395" cy="281" r="5" fill="#152030" stroke="#334155" stroke-width="1"/>
+
+  <!-- Mode buttons (INPUT / OUTPUT) -->
+  <rect x="260" y="341" width="44" height="14" rx="3" fill="#0E1B2E" stroke="#22D3EE" stroke-width="1"/>
+  <text x="282" y="351" font-family="Inter, sans-serif" font-size="6.5" font-weight="600" fill="#22D3EE" text-anchor="middle">INPUT</text>
+  <rect x="312" y="341" width="50" height="14" rx="3" fill="#0E1B2E" stroke="#334155" stroke-width="1"/>
+  <text x="337" y="351" font-family="Inter, sans-serif" font-size="6.5" font-weight="600" fill="#475569" text-anchor="middle">OUTPUT</text>
+
+  <!-- ─── RIGHT SIDE FACE ──────────────────────────────── -->
+  <!-- Ventilation slots (shadow lines) -->
+  <line x1="474" y1="227" x2="474" y2="278" stroke="#18273C" stroke-width="2.5"/>
+  <line x1="484" y1="221" x2="484" y2="272" stroke="#18273C" stroke-width="2.5"/>
+  <line x1="494" y1="216" x2="494" y2="267" stroke="#18273C" stroke-width="2.5"/>
+  <line x1="504" y1="211" x2="504" y2="262" stroke="#18273C" stroke-width="2.5"/>
+  <line x1="514" y1="207" x2="514" y2="258" stroke="#18273C" stroke-width="2.5"/>
+
+  <!-- ─── TOP FACE ─────────────────────────────────────── -->
+  <!-- Subtle logo on top -->
+  <text x="260" y="252" font-family="JetBrains Mono, monospace" font-size="9" font-weight="700"
+        fill="#334155" transform="skewX(-27) translate(35, -12)">HIDProxBox</text>
+
+  <!-- ─── DIMENSION LINES ──────────────────────────────── -->
+  <!-- Width -->
+  <line x1="85" y1="376" x2="455" y2="376" stroke="#334155" stroke-width="1"/>
+  <line x1="85" y1="368" x2="85" y2="380" stroke="#334155" stroke-width="1"/>
+  <line x1="455" y1="368" x2="455" y2="380" stroke="#334155" stroke-width="1"/>
+  <polygon points="92,376 85,373 85,379" fill="#334155"/>
+  <polygon points="448,376 455,373 455,379" fill="#334155"/>
+  <text x="270" y="393" font-family="Inter, sans-serif" font-size="11" fill="#475569" text-anchor="middle">175 mm</text>
+
+  <!-- Height -->
+  <line x1="474" y1="270" x2="474" y2="360" stroke="#334155" stroke-width="1"/>
+  <line x1="465" y1="270" x2="478" y2="270" stroke="#334155" stroke-width="1"/>
+  <line x1="465" y1="360" x2="478" y2="360" stroke="#334155" stroke-width="1"/>
+  <polygon points="474,277 471,270 477,270" fill="#334155"/>
+  <polygon points="474,353 471,360 477,360" fill="#334155"/>
+  <text x="495" y="319" font-family="Inter, sans-serif" font-size="11" fill="#475569">32 mm</text>
+
+  <!-- Depth -->
+  <line x1="460" y1="201" x2="570" y2="201" stroke="#334155" stroke-width="1"/>
+  <line x1="460" y1="195" x2="460" y2="207" stroke="#334155" stroke-width="1"/>
+  <line x1="570" y1="195" x2="570" y2="207" stroke="#334155" stroke-width="1"/>
+  <polygon points="467,201 460,198 460,204" fill="#334155"/>
+  <polygon points="563,201 570,198 570,204" fill="#334155"/>
+  <text x="515" y="197" font-family="Inter, sans-serif" font-size="11" fill="#475569" text-anchor="middle">90 mm</text>
+
+  <!-- ─── CALLOUTS ─────────────────────────────────────── -->
+  <!-- Display callout -->
+  <line x1="168" y1="277" x2="168" y2="248" stroke="#22D3EE" stroke-width="1" stroke-dasharray="3,3" opacity="0.7"/>
+  <circle cx="168" cy="277" r="2.5" fill="#22D3EE"/>
+  <line x1="168" y1="248" x2="105" y2="248" stroke="#22D3EE" stroke-width="1" opacity="0.7"/>
+  <text x="102" y="244" font-family="Inter, sans-serif" font-size="11" fill="#22D3EE" text-anchor="end">3.5″ Touchscreen</text>
+
+  <!-- Buttons callout -->
+  <line x1="355" y1="270" x2="355" y2="248" stroke="#94A3B8" stroke-width="1" stroke-dasharray="3,3" opacity="0.7"/>
+  <circle cx="355" cy="270" r="2.5" fill="#94A3B8"/>
+  <line x1="355" y1="248" x2="460" y2="248" stroke="#94A3B8" stroke-width="1" opacity="0.7"/>
+  <text x="463" y="252" font-family="Inter, sans-serif" font-size="11" fill="#94A3B8">4× select + 2× mode</text>
+
+  <!-- LED callout -->
+  <line x1="275" y1="276" x2="252" y2="256" stroke="#22D3EE" stroke-width="1" stroke-dasharray="3,3" opacity="0.6"/>
+  <text x="249" y="252" font-family="Inter, sans-serif" font-size="11" fill="#22D3EE" text-anchor="end">Status LEDs ×6</text>
+
+  <!-- ─── BACK PANEL DETAIL ─────────────────────────────── -->
+  <text x="600" y="110" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#94A3B8">Back Panel</text>
+  <line x1="600" y1="116" x2="875" y2="116" stroke="#334155" stroke-width="0.5"/>
+  <rect x="600" y="124" width="244" height="52" rx="3" fill="#1E293B" stroke="#334155" stroke-width="1.5"/>
+
+  <!-- USB-A output ×4 -->
+  <rect x="614" y="138" width="16" height="10" rx="1" fill="#0A1628" stroke="#475569" stroke-width="1"/>
+  <rect x="616" y="140" width="12" height="6" rx="0.5" fill="#162030"/>
+  <text x="622" y="161" font-family="Inter, sans-serif" font-size="7" fill="#3B82F6" text-anchor="middle">C1</text>
+  <rect x="636" y="138" width="16" height="10" rx="1" fill="#0A1628" stroke="#475569" stroke-width="1"/>
+  <rect x="638" y="140" width="12" height="6" rx="0.5" fill="#162030"/>
+  <text x="644" y="161" font-family="Inter, sans-serif" font-size="7" fill="#3B82F6" text-anchor="middle">C2</text>
+  <rect x="658" y="138" width="16" height="10" rx="1" fill="#0A1628" stroke="#475569" stroke-width="1"/>
+  <rect x="660" y="140" width="12" height="6" rx="0.5" fill="#162030"/>
+  <text x="666" y="161" font-family="Inter, sans-serif" font-size="7" fill="#3B82F6" text-anchor="middle">C3</text>
+  <rect x="680" y="138" width="16" height="10" rx="1" fill="#0A1628" stroke="#475569" stroke-width="1"/>
+  <rect x="682" y="140" width="12" height="6" rx="0.5" fill="#162030"/>
+  <text x="688" y="161" font-family="Inter, sans-serif" font-size="7" fill="#3B82F6" text-anchor="middle">C4</text>
+
+  <!-- USB-A input -->
+  <rect x="712" y="138" width="16" height="10" rx="1" fill="#0A1628" stroke="#22D3EE" stroke-width="1"/>
+  <rect x="714" y="140" width="12" height="6" rx="0.5" fill="#162030"/>
+  <text x="720" y="161" font-family="Inter, sans-serif" font-size="7" fill="#22D3EE" text-anchor="middle">KBD</text>
+
+  <!-- USB-C power -->
+  <rect x="742" y="138" width="12" height="10" rx="4" fill="#0A1628" stroke="#3B82F6" stroke-width="1"/>
+  <text x="748" y="161" font-family="Inter, sans-serif" font-size="7" fill="#3B82F6" text-anchor="middle">PWR</text>
+
+  <text x="614" y="134" font-family="Inter, sans-serif" font-size="7" fill="#475569">USB-A out ×4</text>
+  <text x="714" y="134" font-family="Inter, sans-serif" font-size="7" fill="#475569">in / pwr</text>
+
+  <!-- ─── SPECS PANEL ──────────────────────────────────── -->
+  <rect x="600" y="192" width="270" height="350" rx="6" fill="#0F172A" stroke="#334155" stroke-width="1"/>
+
+  <text x="620" y="215" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#F1F5F9">Specifications</text>
+  <line x1="620" y1="221" x2="855" y2="221" stroke="#334155" stroke-width="0.5"/>
+
+  <text x="620" y="240" font-family="Inter, sans-serif" font-size="11" fill="#94A3B8">Dimensions</text>
+  <text x="620" y="256" font-family="Inter, sans-serif" font-size="11" fill="#F1F5F9">175 × 90 × 32 mm (W × D × H)</text>
+  <text x="620" y="273" font-family="Inter, sans-serif" font-size="11" fill="#94A3B8">Material</text>
+  <text x="620" y="289" font-family="Inter, sans-serif" font-size="11" fill="#F1F5F9">PLA or PETG (FDM, 0.2 mm layer)</text>
+  <text x="620" y="306" font-family="Inter, sans-serif" font-size="11" fill="#94A3B8">Internal layout</text>
+  <text x="620" y="322" font-family="Inter, sans-serif" font-size="11" fill="#F1F5F9">Pi horizontal · CH552T boards</text>
+  <text x="620" y="337" font-family="Inter, sans-serif" font-size="11" fill="#F1F5F9">stacked on 10 mm standoffs</text>
+  <text x="620" y="354" font-family="Inter, sans-serif" font-size="11" fill="#94A3B8">Wall thickness</text>
+  <text x="620" y="370" font-family="Inter, sans-serif" font-size="11" fill="#F1F5F9">2.5 mm sides · 3.0 mm base</text>
+
+  <text x="620" y="393" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#F1F5F9">3D Print Feasibility</text>
+  <line x1="620" y1="399" x2="855" y2="399" stroke="#334155" stroke-width="0.5"/>
+
+  <circle cx="628" cy="414" r="5" fill="#22D3EE"/>
+  <text x="628" y="417.5" font-family="Inter, sans-serif" font-size="7" font-weight="700" fill="#090D1A" text-anchor="middle">✓</text>
+  <text x="640" y="418" font-family="Inter, sans-serif" font-size="11" fill="#94A3B8">Two-piece shell (top + bottom)</text>
+
+  <circle cx="628" cy="432" r="5" fill="#22D3EE"/>
+  <text x="628" y="435.5" font-family="Inter, sans-serif" font-size="7" font-weight="700" fill="#090D1A" text-anchor="middle">✓</text>
+  <text x="640" y="436" font-family="Inter, sans-serif" font-size="11" fill="#94A3B8">No supports needed (flat faces)</text>
+
+  <circle cx="628" cy="450" r="5" fill="#22D3EE"/>
+  <text x="628" y="453.5" font-family="Inter, sans-serif" font-size="7" font-weight="700" fill="#090D1A" text-anchor="middle">✓</text>
+  <text x="640" y="454" font-family="Inter, sans-serif" font-size="11" fill="#94A3B8">M3 heat-set inserts, 4× screws</text>
+
+  <circle cx="628" cy="468" r="5" fill="#22D3EE"/>
+  <text x="628" y="471.5" font-family="Inter, sans-serif" font-size="7" font-weight="700" fill="#090D1A" text-anchor="middle">✓</text>
+  <text x="640" y="472" font-family="Inter, sans-serif" font-size="11" fill="#94A3B8">Print time ≈ 5–7 hr @ 0.2 mm</text>
+
+  <rect x="614" y="487" width="246" height="42" rx="4" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+  <text x="625" y="501" font-family="Inter, sans-serif" font-size="10" fill="#22D3EE">Pro: lowest profile, standard desk form</text>
+  <text x="625" y="515" font-family="Inter, sans-serif" font-size="10" fill="#94A3B8">Con: flat tray = tight internal spacing</text>
+  <text x="625" y="522" font-family="Inter, sans-serif" font-size="10" fill="#94A3B8">for Pi fan access</text>
+
+  <!-- ─── FOOTER ───────────────────────────────────────── -->
+  <line x1="45" y1="572" x2="875" y2="572" stroke="#334155" stroke-width="1"/>
+  <text x="45" y="590" font-family="JetBrains Mono, monospace" font-size="10" fill="#475569">HIDProxBox · Product Enclosure Design · DVI-33</text>
+  <text x="875" y="590" font-family="JetBrains Mono, monospace" font-size="10" fill="#475569" text-anchor="end">Option A of 3 — Compact Slab</text>
+</svg>
