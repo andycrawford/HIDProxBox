@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <title>HIDProxBox Icon</title>
+
+  <!-- Main proxy box body -->
+  <rect x="15" y="7" width="34" height="50" rx="5"
+        fill="#1E293B" stroke="#3B82F6" stroke-width="2"/>
+
+  <!-- Circuit corner pads (IC-package aesthetic) -->
+  <rect x="15" y="7"  width="5" height="5" fill="#22D3EE" opacity="0.45" rx="1"/>
+  <rect x="44" y="7"  width="5" height="5" fill="#22D3EE" opacity="0.45" rx="1"/>
+  <rect x="15" y="52" width="5" height="5" fill="#22D3EE" opacity="0.45" rx="1"/>
+  <rect x="44" y="52" width="5" height="5" fill="#22D3EE" opacity="0.45" rx="1"/>
+
+  <!-- External input line + node (keyboard/mouse, cyan) -->
+  <line x1="3" y1="32" x2="15" y2="32"
+        stroke="#22D3EE" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="3" cy="32" r="3" fill="#22D3EE"/>
+
+  <!-- Internal: input stem to routing node -->
+  <line x1="17" y1="32" x2="24.5" y2="32"
+        stroke="#22D3EE" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- Internal: routing node (the proxy) -->
+  <circle cx="29" cy="32" r="4.5" fill="#3B82F6"/>
+  <circle cx="29" cy="32" r="1.8" fill="#1E293B"/>
+
+  <!-- Internal: node → vertical bus -->
+  <line x1="33.5" y1="32" x2="40" y2="32"
+        stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="40" y1="17" x2="40" y2="47"
+        stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- Internal: bus → right edge stubs (4 computers) -->
+  <line x1="40" y1="17" x2="49" y2="17" stroke="#3B82F6" stroke-width="1" stroke-linecap="round"/>
+  <line x1="40" y1="27" x2="49" y2="27" stroke="#3B82F6" stroke-width="1" stroke-linecap="round"/>
+  <line x1="40" y1="37" x2="49" y2="37" stroke="#3B82F6" stroke-width="1" stroke-linecap="round"/>
+  <line x1="40" y1="47" x2="49" y2="47" stroke="#3B82F6" stroke-width="1" stroke-linecap="round"/>
+
+  <!-- External output lines (right, blue = 4 target computers) -->
+  <line x1="49" y1="17" x2="59" y2="17" stroke="#3B82F6" stroke-width="2" stroke-linecap="round"/>
+  <line x1="49" y1="27" x2="59" y2="27" stroke="#3B82F6" stroke-width="2" stroke-linecap="round"/>
+  <line x1="49" y1="37" x2="59" y2="37" stroke="#3B82F6" stroke-width="2" stroke-linecap="round"/>
+  <line x1="49" y1="47" x2="59" y2="47" stroke="#3B82F6" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Output endpoint dots -->
+  <circle cx="60" cy="17" r="2.5" fill="#3B82F6"/>
+  <circle cx="60" cy="27" r="2.5" fill="#3B82F6"/>
+  <circle cx="60" cy="37" r="2.5" fill="#3B82F6"/>
+  <circle cx="60" cy="47" r="2.5" fill="#3B82F6"/>
+</svg>
