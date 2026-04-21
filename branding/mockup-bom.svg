@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 400" width="1280" height="400">
+  <title>HIDProxBox — Bill of Materials Table Mockup</title>
+
+  <!-- Background: Navy surface -->
+  <rect width="1280" height="400" fill="#0F172A"/>
+
+  <!-- ── Section heading ─────────────────────────────────────── -->
+  <text x="640" y="52" text-anchor="middle"
+        font-family="Inter,system-ui,sans-serif" font-size="36" font-weight="700" fill="#F1F5F9">
+    Bill of materials
+  </text>
+  <text x="640" y="76" text-anchor="middle"
+        font-family="Inter,system-ui,sans-serif" font-size="15" fill="#475569">
+    Full 4-port build under $100 in parts
+  </text>
+
+  <!--
+    Table layout
+    Margins: 48px each side → table x=48 to x=1232 (width=1184)
+    Column breaks:
+      Item  : x=48  → x=892  (width=844)
+      Qty   : x=892 → x=1044 (width=152)
+      Cost  : x=1044→ x=1232 (width=188)
+
+    Row height: 44px
+    Header row y: 100
+    Data rows: 144, 188, 232, 276, 320
+    Total row: 364
+  -->
+
+  <!-- ── Table container border ─────────────────────────────── -->
+  <rect x="48" y="100" width="1184" height="308" rx="8" fill="none" stroke="#334155" stroke-width="1"/>
+
+  <!-- ── Header row ─────────────────────────────────────────── -->
+  <rect x="48" y="100" width="1184" height="44" rx="8" fill="#1E293B"/>
+  <!-- Clip the bottom corners of header to match card (only top is rounded) -->
+  <rect x="48" y="126" width="1184" height="18" fill="#1E293B"/>
+  <!-- Column dividers in header -->
+  <line x1="892"  y1="100" x2="892"  y2="144" stroke="#334155" stroke-width="1"/>
+  <line x1="1044" y1="100" x2="1044" y2="144" stroke="#334155" stroke-width="1"/>
+  <!-- Header text -->
+  <text x="68"   y="127" font-family="Inter,system-ui,sans-serif" font-size="12" font-weight="700" letter-spacing="0.06em" fill="#94A3B8">COMPONENT</text>
+  <text x="912"  y="127" font-family="Inter,system-ui,sans-serif" font-size="12" font-weight="700" letter-spacing="0.06em" fill="#94A3B8">QTY</text>
+  <text x="1212" y="127" text-anchor="end" font-family="Inter,system-ui,sans-serif" font-size="12" font-weight="700" letter-spacing="0.06em" fill="#94A3B8">APPROX. COST</text>
+
+  <!-- ── Data rows ──────────────────────────────────────────── -->
+
+  <!-- Row 1 — Raspberry Pi (alt bg) -->
+  <rect x="48" y="144" width="1184" height="44" fill="#111827"/>
+  <line x1="48" y1="144" x2="1232" y2="144" stroke="#334155" stroke-width="1"/>
+  <line x1="892"  y1="144" x2="892"  y2="188" stroke="#1E293B" stroke-width="1"/>
+  <line x1="1044" y1="144" x2="1044" y2="188" stroke="#1E293B" stroke-width="1"/>
+  <!-- Leading dot (input/core component = cyan) -->
+  <circle cx="65" cy="166" r="3.5" fill="#22D3EE"/>
+  <text x="80"  y="171" font-family="Inter,system-ui,sans-serif" font-size="14" fill="#F1F5F9">Raspberry Pi Zero 2W or Pi 4</text>
+  <text x="912" y="171" font-family="Inter,system-ui,sans-serif" font-size="14" fill="#94A3B8">1</text>
+  <text x="1212" y="171" text-anchor="end" font-family="Inter,system-ui,sans-serif" font-size="14" fill="#F1F5F9">$15–$55</text>
+
+  <!-- Row 2 — CH552T (standard bg) -->
+  <rect x="48" y="188" width="1184" height="44" fill="#0F172A"/>
+  <line x1="48" y1="188" x2="1232" y2="188" stroke="#334155" stroke-width="1"/>
+  <line x1="892"  y1="188" x2="892"  y2="232" stroke="#1E293B" stroke-width="1"/>
+  <line x1="1044" y1="188" x2="1044" y2="232" stroke="#1E293B" stroke-width="1"/>
+  <circle cx="65" cy="210" r="3.5" fill="#3B82F6"/>
+  <text x="80"  y="215" font-family="Inter,system-ui,sans-serif" font-size="14" fill="#F1F5F9">CH552T microcontrollers</text>
+  <text x="912" y="215" font-family="Inter,system-ui,sans-serif" font-size="14" fill="#94A3B8">4</text>
+  <text x="1212" y="215" text-anchor="end" font-family="Inter,system-ui,sans-serif" font-size="14" fill="#F1F5F9">&lt; $1 each</text>
+
+  <!-- Row 3 — USB-serial adapters (alt bg) -->
+  <rect x="48" y="232" width="1184" height="44" fill="#111827"/>
+  <line x1="48" y1="232" x2="1232" y2="232" stroke="#334155" stroke-width="1"/>
+  <line x1="892"  y1="232" x2="892"  y2="276" stroke="#1E293B" stroke-width="1"/>
+  <line x1="1044" y1="232" x2="1044" y2="276" stroke="#1E293B" stroke-width="1"/>
+  <circle cx="65" cy="254" r="3.5" fill="#3B82F6"/>
+  <text x="80"  y="259" font-family="Inter,system-ui,sans-serif" font-size="14" fill="#F1F5F9">USB-serial adapters (CP2102 / CH340)</text>
+  <text x="912" y="259" font-family="Inter,system-ui,sans-serif" font-size="14" fill="#94A3B8">4</text>
+  <text x="1212" y="259" text-anchor="end" font-family="Inter,system-ui,sans-serif" font-size="14" fill="#F1F5F9">~$1–$2 each</text>
+
+  <!-- Row 4 — Buttons/LEDs (standard bg) -->
+  <rect x="48" y="276" width="1184" height="44" fill="#0F172A"/>
+  <line x1="48" y1="276" x2="1232" y2="276" stroke="#334155" stroke-width="1"/>
+  <line x1="892"  y1="276" x2="892"  y2="320" stroke="#1E293B" stroke-width="1"/>
+  <line x1="1044" y1="276" x2="1044" y2="320" stroke="#1E293B" stroke-width="1"/>
+  <circle cx="65" cy="298" r="3.5" fill="#475569"/>
+  <text x="80"  y="303" font-family="Inter,system-ui,sans-serif" font-size="14" fill="#F1F5F9">Tactile buttons + LEDs + resistors</text>
+  <text x="912" y="303" font-family="Inter,system-ui,sans-serif" font-size="14" fill="#94A3B8">—</text>
+  <text x="1212" y="303" text-anchor="end" font-family="Inter,system-ui,sans-serif" font-size="14" fill="#F1F5F9">&lt; $5</text>
+
+  <!-- Row 5 — Touchscreen (alt bg, optional) -->
+  <rect x="48" y="320" width="1184" height="44" fill="#111827"/>
+  <line x1="48" y1="320" x2="1232" y2="320" stroke="#334155" stroke-width="1"/>
+  <line x1="892"  y1="320" x2="892"  y2="364" stroke="#1E293B" stroke-width="1"/>
+  <line x1="1044" y1="320" x2="1044" y2="364" stroke="#1E293B" stroke-width="1"/>
+  <circle cx="65" cy="342" r="3.5" fill="#475569"/>
+  <text x="80"  y="347" font-family="Inter,system-ui,sans-serif" font-size="14" fill="#94A3B8">Optional touchscreen (3.5–7&quot;)</text>
+  <text x="80"  y="363" font-family="Inter,system-ui,sans-serif" font-size="10" font-weight="600" fill="#475569">OPTIONAL</text>
+  <text x="912" y="347" font-family="Inter,system-ui,sans-serif" font-size="14" fill="#94A3B8">1</text>
+  <text x="1212" y="347" text-anchor="end" font-family="Inter,system-ui,sans-serif" font-size="14" fill="#94A3B8">$15–$30</text>
+
+  <!-- ── Total row ────────────────────────────────────────────── -->
+  <rect x="48" y="364" width="1184" height="44" rx="8" fill="#1E293B"/>
+  <rect x="48" y="364" width="1184" height="18" fill="#1E293B"/>
+  <line x1="48" y1="364" x2="1232" y2="364" stroke="#334155" stroke-width="1.5"/>
+  <line x1="892"  y1="364" x2="892"  y2="408" stroke="#334155" stroke-width="1"/>
+  <line x1="1044" y1="364" x2="1044" y2="408" stroke="#334155" stroke-width="1"/>
+  <text x="80"   y="391" font-family="Inter,system-ui,sans-serif" font-size="14" font-weight="700" fill="#F1F5F9">Total (4-port build)</text>
+  <text x="912"  y="391" font-family="Inter,system-ui,sans-serif" font-size="14" fill="#94A3B8">—</text>
+  <!-- Total cost highlighted in cyan -->
+  <text x="1212" y="391" text-anchor="end" font-family="Inter,system-ui,sans-serif" font-size="16" font-weight="700" fill="#22D3EE">under $100</text>
+
+  <!-- ── Spec annotations ────────────────────────────────────── -->
+  <text x="25" y="395" font-family="Inter,system-ui,sans-serif" font-size="10" fill="#334155">
+    Table: rx=8 container · header bg=--color-bg-card · alt rows bg=#111827 (#0F172A between navy/slate) · col divider=--color-border-light · total row cost=--color-cyan
+  </text>
+</svg>
