@@ -49,6 +49,7 @@
     </a>
     <div class="navbar-links">
       <a href="#features">Features</a>
+      <a href="#web-control-panel">Web Panel</a>
       <a href="#use-cases">Use Cases</a>
       <a href="#bom">BOM</a>
       <a href="#get-started">Get Started</a>
@@ -150,6 +151,47 @@
           <h3><span class="leading-dot" style="background:var(--color-blue)"></span>Open-Source &amp; Hackable</h3>
           <p>Producer-consumer architecture — add a new input source or output sink in a few dozen lines of Python. MIT licensed.</p>
           <span class="feature-category" style="color:var(--color-blue)">OUTPUT</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== WEB CONTROL PANEL ===== -->
+  <section class="section bg-dots" id="web-control-panel">
+    <div class="container">
+      <h2 class="section-title">Browser Control Panel</h2>
+      <p class="section-desc">Full KVM control from any browser at <code>http://&lt;pi-ip&gt;:8080</code> — no app, no drivers.</p>
+
+      <div class="web-ui-showcase">
+        <div class="web-ui-screenshot">
+          <img src="screenshot-web-ui.png"
+               alt="HIDProxBox web control panel showing computer selector, input/output mode toggles, and the Paste Text entry card with a successful send confirmation"
+               width="360">
+        </div>
+        <div class="web-ui-details">
+          <h3 class="web-ui-feature-title">
+            <span class="leading-dot" style="background:var(--color-blue)"></span>
+            Paste Text Entry
+          </h3>
+          <p class="web-ui-feature-desc">Type or paste up to 2,000 characters and click <strong>Send as Keystrokes</strong>. The daemon replays each character as a USB HID key-down/key-up report — no clipboard access needed on the target machine.</p>
+
+          <ul class="web-ui-list">
+            <li>Passwords at BIOS / UEFI prompts</li>
+            <li>Full-disk encryption passphrases (LUKS, FileVault, BitLocker)</li>
+            <li>VMs with isolated clipboards</li>
+            <li>Headless machines without paste support</li>
+          </ul>
+
+          <div class="api-ref-block">
+            <span class="api-ref-label">API endpoint</span>
+            <pre><code>POST /api/paste
+Content-Type: application/json
+
+{"text": "your text here"}
+
+→ {"sent": 14, "skipped": 0}</code></pre>
+            <p class="api-ref-note">Returns <code>skipped</code> count for characters outside the US ANSI keymap. Max 2,000 chars per request. Select an active computer first.</p>
+          </div>
         </div>
       </div>
     </div>

@@ -297,6 +297,99 @@ pre code { background: none; padding: 0; color: var(--color-text-muted); }
   flex-direction: column;
 }
 
+/* ----- Web Control Panel Showcase ----------------- */
+.web-ui-showcase {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-12);
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .web-ui-showcase { grid-template-columns: 1fr; }
+  .web-ui-screenshot { text-align: center; }
+}
+
+.web-ui-screenshot img {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-card-lg);
+  max-width: 100%;
+  display: block;
+}
+
+.web-ui-feature-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 1.1rem;
+  font-weight: var(--weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-4);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+}
+
+.web-ui-feature-desc {
+  font-size: var(--text-body);
+  color: var(--color-text-muted);
+  line-height: var(--leading-loose);
+  margin-bottom: var(--space-5);
+}
+
+.web-ui-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-8) 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.web-ui-list li {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  padding-left: var(--space-4);
+  position: relative;
+}
+.web-ui-list li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: var(--color-blue);
+  font-size: 11px;
+  top: 1px;
+}
+
+.api-ref-block {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.api-ref-label {
+  display: block;
+  font-size: 11px;
+  font-weight: var(--weight-semibold);
+  font-family: var(--font-mono);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-bg-card);
+  border-bottom: 1px solid var(--color-border);
+}
+.api-ref-block pre {
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid var(--color-border);
+  margin: 0;
+}
+.api-ref-note {
+  font-size: 12px;
+  color: var(--color-text-dim);
+  line-height: var(--leading-normal);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-bg-card);
+}
+
 /* ----- Use-Case Grid ------------------------------ */
 .usecases-grid {
   display: grid;
