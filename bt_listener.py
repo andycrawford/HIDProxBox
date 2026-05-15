@@ -45,6 +45,7 @@ import time
 from typing import Optional
 
 import config
+from router import SOURCE_BT
 
 log = logging.getLogger(__name__)
 
@@ -71,7 +72,7 @@ class BTListener(threading.Thread):
     # ── lifecycle ─────────────────────────────────────────────────────────────
 
     def start(self) -> None:
-        if not config.BT_ENABLED:
+        if not config.BT_INPUT_ENABLED:
             log.info("BTListener disabled in config; not starting.")
             return
 
@@ -217,7 +218,7 @@ class BTListener(threading.Thread):
                 continue
 
             try:
-                self._q.put_nowait((report_type, payload))
+                self._q.put_nowait((SOURCE_BT, report_type, payload))
             except queue.Full:
                 log.warning("BTListener: HID queue full; dropping report.")
 
