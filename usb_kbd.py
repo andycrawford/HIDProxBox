@@ -181,9 +181,15 @@ class USBKeyboard(threading.Thread):
         super().__init__(name="usb-kbd", daemon=True)
         self._q         = report_queue
         self._stop      = threading.Event()
-        self._device    = None      # evdev.InputDevice
+        self._device    = None      # evdev.InputDevice (keyboard)
         self._modifiers = 0         # bitmask of currently held modifier keys
         self._keys      = set()     # set of currently pressed HID keycodes
+        # Mouse state (accumulated between sync events)
+        self._mouse_buttons = 0     # button bitmask
+        self._mouse_x       = 0     # accumulated relative X
+        self._mouse_y       = 0     # accumulated relative Y
+        self._mouse_wheel   = 0     # accumulated wheel delta
+        self._mouse_thread: Optional[threading.Thread] = None
 
     # ── lifecycle ─────────────────────────────────────────────────────────────
 
@@ -194,6 +200,11 @@ class USBKeyboard(threading.Thread):
             log.warning("evdev not installed (pip install evdev). USB keyboard disabled.")
             return
         super().start()
+        # Spawn mouse reader as a separate daemon thread
+        self._mouse_thread = threading.Thread(
+            target=self._mouse_loop, name="usb-mouse", daemon=True
+        )
+        self._mouse_thread.start()
         log.info("USBKeyboard reader started.")
 
     def stop(self) -> None:
@@ -204,6 +215,8 @@ class USBKeyboard(threading.Thread):
             except Exception:
                 pass
         self.join(timeout=3)
+        if self._mouse_thread:
+            self._mouse_thread.join(timeout=3)
         log.info("USBKeyboard reader stopped.")
 
     # ── main loop ─────────────────────────────────────────────────────────────
@@ -242,6 +255,97 @@ class USBKeyboard(threading.Thread):
                 break
             if event.type == evdev.ecodes.EV_KEY:
                 self._handle_key_event(event)
+
+    # ── mouse loop (separate thread, separate device) ─────────────────────────
+
+    def _mouse_loop(self) -> None:
+        """Continuously reads from a USB mouse device and emits mouse reports."""
+        while not self._stop.is_set():
+            device = self._open_mouse_device()
+            if device is None:
+                self._interruptible_sleep(3)
+                continue
+
+            log.info("USB mouse opened: %s (%s)", device.path, device.name)
+            try:
+                self._read_mouse_loop(device)
+            except Exception as exc:
+                if not self._stop.is_set():
+                    log.warning("USB mouse read error: %s — reopening.", exc)
+            finally:
+                try:
+                    device.close()
+                except Exception:
+                    pass
+
+            if not self._stop.is_set():
+                self._interruptible_sleep(1)
+
+    def _read_mouse_loop(self, device) -> None:
+        import evdev
+
+        # evdev mouse button codes → HID button bits
+        BTN_LEFT   = evdev.ecodes.BTN_LEFT    # 272
+        BTN_RIGHT  = evdev.ecodes.BTN_RIGHT   # 273
+        BTN_MIDDLE = evdev.ecodes.BTN_MIDDLE  # 274
+        _BTN_BITS  = {BTN_LEFT: 0x01, BTN_RIGHT: 0x02, BTN_MIDDLE: 0x04}
+
+        REL_X     = evdev.ecodes.REL_X
+        REL_Y     = evdev.ecodes.REL_Y
+        REL_WHEEL = evdev.ecodes.REL_WHEEL
+        EV_SYN    = evdev.ecodes.EV_SYN
+        EV_REL    = evdev.ecodes.EV_REL
+        EV_KEY    = evdev.ecodes.EV_KEY
+        SYN_REPORT = evdev.ecodes.SYN_REPORT
+
+        for event in device.read_loop():
+            if self._stop.is_set():
+                break
+
+            if event.type == EV_REL:
+                if event.code == REL_X:
+                    self._mouse_x = max(-127, min(127, self._mouse_x + event.value))
+                elif event.code == REL_Y:
+                    self._mouse_y = max(-127, min(127, self._mouse_y + event.value))
+                elif event.code == REL_WHEEL:
+                    self._mouse_wheel = max(-127, min(127, self._mouse_wheel + event.value))
+
+            elif event.type == EV_KEY and event.code in _BTN_BITS:
+                bit = _BTN_BITS[event.code]
+                if event.value:   # press
+                    self._mouse_buttons |= bit
+                else:             # release
+                    self._mouse_buttons &= ~bit
+                # Emit immediately on button change (don't wait for SYN)
+                self._enqueue_mouse()
+
+            elif event.type == EV_SYN and event.code == SYN_REPORT:
+                # Flush accumulated motion
+                if self._mouse_x or self._mouse_y or self._mouse_wheel:
+                    self._enqueue_mouse()
+                    self._mouse_x = 0
+                    self._mouse_y = 0
+                    self._mouse_wheel = 0
+
+    def _enqueue_mouse(self) -> None:
+        import queue as _q
+        from hid_writer import ReportType
+        from router import SOURCE_USB
+
+        # 4-byte HID mouse report: [buttons, X (int8), Y (int8), wheel (int8)]
+        def _clamp(v):
+            return v & 0xFF  # two's complement for negative values
+
+        report = bytes([
+            self._mouse_buttons,
+            _clamp(self._mouse_x),
+            _clamp(self._mouse_y),
+            _clamp(self._mouse_wheel),
+        ])
+        try:
+            self._q.put_nowait((SOURCE_USB, ReportType.MOUSE, report))
+        except _q.Full:
+            log.warning("USBKeyboard: mouse report queue full, dropping.")
 
     def _handle_key_event(self, event) -> None:
         """Convert an EV_KEY event into a HID report and enqueue it."""
@@ -314,6 +418,26 @@ class USBKeyboard(threading.Thread):
                     # Require at least KEY_A (30) to distinguish from IR remotes etc.
                     if evdev.ecodes.KEY_A in key_list:
                         return dev
+                dev.close()
+            except Exception:
+                pass
+        return None
+
+    def _open_mouse_device(self):
+        """Find and open the first USB mouse in /dev/input (EV_REL + BTN_LEFT)."""
+        import evdev
+
+        for p in sorted(Path("/dev/input").glob("event*")):
+            try:
+                dev = evdev.InputDevice(str(p))
+                caps = dev.capabilities()
+                has_rel = evdev.ecodes.EV_REL in caps
+                has_btn_left = (
+                    evdev.ecodes.EV_KEY in caps
+                    and evdev.ecodes.BTN_LEFT in caps[evdev.ecodes.EV_KEY]
+                )
+                if has_rel and has_btn_left:
+                    return dev
                 dev.close()
             except Exception:
                 pass

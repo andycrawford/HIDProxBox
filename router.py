@@ -119,8 +119,29 @@ class Router(threading.Thread):
                 return
             old = self._active_computer
             self._active_computer = n
+            out_mode = self._output_mode
         log.info("Active computer: %d → %d", old, n)
+        # Release any held keys on the old computer to avoid stuck-key state
+        self._release_all(old, out_mode)
         self._notify()
+
+    def _release_all(self, computer: int, out_mode) -> None:
+        """Send null keyboard and mouse reports to clear any held keys/buttons."""
+        from hid_writer import ReportType, NULL_KEYBOARD, NULL_MOUSE
+        if out_mode == OutputMode.USB:
+            if self._usb_sink:
+                try:
+                    self._usb_sink(computer, ReportType.KEYBOARD, NULL_KEYBOARD)
+                    self._usb_sink(computer, ReportType.MOUSE, NULL_MOUSE)
+                except Exception as exc:
+                    log.warning("select_computer: release_all error: %s", exc)
+        else:
+            if self._bt_sink:
+                try:
+                    self._bt_sink(ReportType.KEYBOARD, NULL_KEYBOARD)
+                    self._bt_sink(ReportType.MOUSE, NULL_MOUSE)
+                except Exception as exc:
+                    log.warning("select_computer: release_all (bt) error: %s", exc)
 
     def set_input_mode(self, mode: InputMode) -> None:
         """Switch active keyboard input source."""

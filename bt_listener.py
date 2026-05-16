@@ -243,6 +243,11 @@ class BTListener(threading.Thread):
             return ReportType.KEYBOARD   # strip report_id upstream if needed
         if n == 5:
             return ReportType.MOUSE
+        # Consumer/multimedia reports: 2 bytes bare, or 3 bytes with report ID prefix
+        if n == 2:
+            return ReportType.CONSUMER
+        if n == 3:
+            return ReportType.CONSUMER   # strip leading report ID byte upstream if needed
         return None
 
     # ── helpers ───────────────────────────────────────────────────────────────
