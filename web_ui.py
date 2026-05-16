@@ -4,9 +4,12 @@ web_ui.py — Lightweight HTTP server for HIDProxBox control
 Exposes:
   GET  /              → HTML control panel
   GET  /api/status    → JSON {active_computer, input_mode, output_mode}
+  GET  /api/events    → Server-Sent Events stream (live state updates)
   POST /api/computer/<n>       → select computer n (1–4)
-  POST /api/input/toggle       → toggle input mode
-  POST /api/output/toggle      → toggle output mode
+  POST /api/input/<usb|bt>     → set input mode explicitly
+  POST /api/input/toggle       → toggle input mode usb↔bluetooth
+  POST /api/output/<usb|bt>    → set output mode explicitly
+  POST /api/output/toggle      → toggle output mode usb↔bluetooth
   POST /api/paste              → JSON {"text":"…"} → send as keystrokes
 
 Runs in a daemon thread started by daemon.py.
@@ -15,13 +18,14 @@ No third-party dependencies — uses only stdlib http.server.
 
 import json
 import logging
+import queue
 import re
 import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from typing import Optional
+from typing import List, Optional
 
 import config
-from router import Router
+from router import Router, InputMode, OutputMode
 
 log = logging.getLogger(__name__)
 
@@ -75,6 +79,51 @@ CHAR_MAP: dict[str, tuple[int, int]] = {
 
 # Safety limit: reject requests longer than this to avoid locking up the HID pipeline.
 PASTE_TEXT_LIMIT = 2000
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SSE subscriber registry
+# ─────────────────────────────────────────────────────────────────────────────
+
+class _SSEBroker:
+    """Fan-out state-change events to all connected SSE clients."""
+
+    def __init__(self) -> None:
+        self._lock: threading.Lock = threading.Lock()
+        self._clients: List[queue.Queue] = []
+
+    def subscribe(self) -> queue.Queue:
+        q: queue.Queue = queue.Queue(maxsize=8)
+        with self._lock:
+            self._clients.append(q)
+        return q
+
+    def unsubscribe(self, q: queue.Queue) -> None:
+        with self._lock:
+            self._clients = [c for c in self._clients if c is not q]
+
+    def publish(self, data: str) -> None:
+        """Push a raw SSE 'data: …\n\n' payload to all subscribers."""
+        with self._lock:
+            for q in list(self._clients):
+                try:
+                    q.put_nowait(data)
+                except queue.Full:
+                    pass  # slow client — drop the event
+
+
+# Module-level broker; daemon.py wires the router state-change callback to it.
+sse_broker = _SSEBroker()
+
+
+def notify_sse(computer: int, input_mode, output_mode) -> None:
+    """Called by Router._notify() (via daemon.py hook) on every state change."""
+    payload = json.dumps({
+        "active_computer": computer,
+        "input_mode": input_mode.value if hasattr(input_mode, "value") else str(input_mode),
+        "output_mode": output_mode.value if hasattr(output_mode, "value") else str(output_mode),
+    })
+    sse_broker.publish(f"data: {payload}\n\n")
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Embedded HTML frontend
@@ -155,8 +204,8 @@ _HTML = """\
 <div class="card">
   <h2>Input Mode</h2>
   <div class="modes">
-    <button class="btn" id="input-usb">USB</button>
-    <button class="btn" id="input-bt">Bluetooth</button>
+    <button class="btn" id="input-usb"  onclick="setInput('usb')">USB</button>
+    <button class="btn" id="input-bt"   onclick="setInput('bt')">Bluetooth</button>
   </div>
   <button class="btn wide" onclick="toggleInput()">Toggle Input</button>
 </div>
@@ -164,8 +213,8 @@ _HTML = """\
 <div class="card">
   <h2>Output Mode</h2>
   <div class="modes">
-    <button class="btn" id="output-usb">USB</button>
-    <button class="btn" id="output-bt">Bluetooth</button>
+    <button class="btn" id="output-usb" onclick="setOutput('usb')">USB</button>
+    <button class="btn" id="output-bt"  onclick="setOutput('bt')">Bluetooth</button>
   </div>
   <button class="btn wide" onclick="toggleOutput()">Toggle Output</button>
 </div>
@@ -173,13 +222,13 @@ _HTML = """\
 <div class="card">
   <h2>Paste Text</h2>
   <textarea class="paste-area" id="paste-input" rows="4"
-    placeholder="Paste text here to send as keystrokes to the active computer…"></textarea>
+    placeholder="Paste text here to send as keystrokes to the active computer\u2026"></textarea>
   <button class="btn wide" id="paste-btn" onclick="sendPaste()">Send as Keystrokes</button>
   <div id="paste-status"></div>
 </div>
 
 <div class="status-line">
-  <span><span id="dot"></span><span id="conn">connecting…</span></span>
+  <span><span id="dot"></span><span id="conn">connecting\u2026</span></span>
   <span id="ts"></span>
 </div>
 
@@ -190,11 +239,11 @@ function apiFetch(path, method='GET') {
   return fetch(path, { method }).then(r => r.json());
 }
 
-function selectComputer(n) {
-  apiFetch('/api/computer/' + n, 'POST').then(applyState);
-}
-function toggleInput()  { apiFetch('/api/input/toggle',  'POST').then(applyState); }
-function toggleOutput() { apiFetch('/api/output/toggle', 'POST').then(applyState); }
+function selectComputer(n) { apiFetch('/api/computer/' + n, 'POST').then(applyState); }
+function setInput(mode)     { apiFetch('/api/input/'  + mode, 'POST').then(applyState); }
+function setOutput(mode)    { apiFetch('/api/output/' + mode, 'POST').then(applyState); }
+function toggleInput()      { apiFetch('/api/input/toggle',  'POST').then(applyState); }
+function toggleOutput()     { apiFetch('/api/output/toggle', 'POST').then(applyState); }
 
 function applyState(s) {
   lastOk = Date.now();
@@ -216,15 +265,24 @@ function applyState(s) {
   document.getElementById('output-bt').className  = 'btn' + (outBt ? ' active' : '');
 }
 
-function poll() {
-  apiFetch('/api/status').then(applyState).catch(() => {
+// ── SSE for real-time updates ────────────────────────────────────────────────
+function connectSSE() {
+  const es = new EventSource('/api/events');
+  es.onmessage = e => {
+    try { applyState(JSON.parse(e.data)); } catch(_) {}
+  };
+  es.onerror = () => {
     if (Date.now() - lastOk > 3000) {
       document.getElementById('dot').className = 'stale';
       document.getElementById('conn').textContent = 'disconnected';
     }
-  });
+    // Fallback: reconnect after 3 s
+    es.close();
+    setTimeout(connectSSE, 3000);
+  };
 }
 
+// ── Paste ────────────────────────────────────────────────────────────────────
 function sendPaste() {
   const text = document.getElementById('paste-input').value;
   if (!text) return;
@@ -260,8 +318,9 @@ function sendPaste() {
     });
 }
 
-poll();
-setInterval(poll, 1000);
+// Bootstrap: fetch initial state then open SSE stream
+apiFetch('/api/status').then(applyState).catch(() => {});
+connectSSE();
 </script>
 </body>
 </html>
@@ -319,29 +378,87 @@ class _Handler(BaseHTTPRequestHandler):
             self._send_html(_HTML)
         elif self.path == "/api/status":
             self._send_json(self._state_json())
+        elif self.path == "/api/events":
+            self._handle_sse()
         else:
             self.send_error(404)
+
+    def _handle_sse(self) -> None:
+        """Server-Sent Events stream — pushes state JSON on every change."""
+        self.send_response(200)
+        self.send_header("Content-Type", "text/event-stream")
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("Connection", "keep-alive")
+        self.send_header("X-Accel-Buffering", "no")  # disable nginx proxy buffering
+        self.end_headers()
+
+        # Send current state immediately so the client doesn't wait
+        try:
+            initial = json.dumps(self._state_json())
+            self.wfile.write(f"data: {initial}\n\n".encode())
+            self.wfile.flush()
+        except Exception:
+            return
+
+        q = sse_broker.subscribe()
+        try:
+            while True:
+                try:
+                    msg = q.get(timeout=15)  # 15 s heartbeat keep-alive
+                except queue.Empty:
+                    # Send keep-alive comment to detect dead connections
+                    try:
+                        self.wfile.write(b": keep-alive\n\n")
+                        self.wfile.flush()
+                    except Exception:
+                        break
+                    continue
+                try:
+                    self.wfile.write(msg.encode())
+                    self.wfile.flush()
+                except Exception:
+                    break
+        finally:
+            sse_broker.unsubscribe(q)
 
     def do_POST(self):  # noqa: N802
         router: Router = self.server.router
         path = self.path.rstrip("/")
 
+        # POST /api/computer/<1-4>
         m = re.fullmatch(r"/api/computer/([1-4])", path)
         if m:
             router.select_computer(int(m.group(1)))
             self._send_json(self._state_json())
             return
 
-        if path == "/api/input/toggle":
-            router.toggle_input()
+        # POST /api/input/<usb|bt|toggle>
+        m = re.fullmatch(r"/api/input/(usb|bt|bluetooth|toggle)", path)
+        if m:
+            arg = m.group(1)
+            if arg == "toggle":
+                router.toggle_input()
+            elif arg in ("bt", "bluetooth"):
+                router.set_input_mode(InputMode.BLUETOOTH)
+            else:
+                router.set_input_mode(InputMode.USB)
             self._send_json(self._state_json())
             return
 
-        if path == "/api/output/toggle":
-            router.toggle_output()
+        # POST /api/output/<usb|bt|toggle>
+        m = re.fullmatch(r"/api/output/(usb|bt|bluetooth|toggle)", path)
+        if m:
+            arg = m.group(1)
+            if arg == "toggle":
+                router.toggle_output()
+            elif arg in ("bt", "bluetooth"):
+                router.set_output_mode(OutputMode.BLUETOOTH)
+            else:
+                router.set_output_mode(OutputMode.USB)
             self._send_json(self._state_json())
             return
 
+        # POST /api/paste
         if path == "/api/paste":
             body = self._read_json_body()
             if body is None or "text" not in body:
@@ -353,10 +470,6 @@ class _Handler(BaseHTTPRequestHandler):
                     {"error": f"text too long (max {PASTE_TEXT_LIMIT} chars)"}, 400
                 )
                 return
-            # Router.type_text(text: str) -> dict {"sent": int, "skipped": int}
-            # Uses CHAR_MAP from this module to build key-down/key-up HID reports
-            # and dispatches them to the active computer's output sink.
-            # Returns {"error": str} if no computer is active.
             result = router.type_text(text)
             self._send_json(result)
             return

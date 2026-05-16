@@ -180,6 +180,55 @@ class Router(threading.Thread):
         with self._lock:
             return (self._active_computer, self._input_mode, self._output_mode)
 
+    def type_text(self, text: str) -> dict:
+        """Send a string as HID keyboard reports to the active computer.
+
+        Imports CHAR_MAP from web_ui at call time to avoid a circular import.
+        Returns {"sent": int, "skipped": int} on success,
+        or {"error": str} if no output sink is available.
+        """
+        from web_ui import CHAR_MAP
+        import time as _time
+
+        with self._lock:
+            computer  = self._active_computer
+            out_mode  = self._output_mode
+
+        # Determine which sink we are targeting
+        if out_mode == OutputMode.USB:
+            if not self._usb_sink:
+                return {"error": "USB sink not connected"}
+            def _send(report_bytes):
+                from hid_writer import ReportType
+                self._usb_sink(computer, ReportType.KEYBOARD, report_bytes)
+        else:
+            if not self._bt_sink:
+                return {"error": "BT sink not connected"}
+            def _send(report_bytes):
+                from hid_writer import ReportType
+                self._bt_sink(ReportType.KEYBOARD, report_bytes)
+
+        NULL_KBD = bytes(8)
+        sent = 0
+        skipped = 0
+        for ch in text:
+            entry = CHAR_MAP.get(ch)
+            if entry is None:
+                skipped += 1
+                continue
+            keycode, modifier = entry
+            key_down = bytes([modifier, 0x00, keycode, 0, 0, 0, 0, 0])
+            try:
+                _send(key_down)
+                _time.sleep(0.020)
+                _send(NULL_KBD)
+                _time.sleep(0.005)
+                sent += 1
+            except Exception as exc:
+                log.warning("type_text: send error: %s", exc)
+                skipped += 1
+        return {"sent": sent, "skipped": skipped}
+
     # ── dispatch loop ─────────────────────────────────────────────────────────
 
     def run(self) -> None:

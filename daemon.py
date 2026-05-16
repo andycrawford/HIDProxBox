@@ -53,6 +53,7 @@ from gpio_watcher import GPIOWatcher
 from bt_listener import BTListener
 from bt_output import BTOutput
 from usb_kbd import USBKeyboard
+from web_ui import WebUIServer, notify_sse
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -119,6 +120,7 @@ class HIDProxDaemon:
         self._bt_in   = BTListener(self._router.report_queue)
         self._usb_kbd = USBKeyboard(self._router.report_queue)
         self._gpio    = GPIOWatcher(self._router)
+        self._web_ui  = WebUIServer(self._router) if getattr(config, "WEB_UI_ENABLED", True) else None
 
     # ── entry point ───────────────────────────────────────────────────────────
 
@@ -175,6 +177,12 @@ class HIDProxDaemon:
             computer, _, out_mode = router.snapshot()
             if out_mode == OutputMode.BLUETOOTH:
                 self._bt_out.set_active_slot(computer)
+            # Push live state to SSE clients
+            try:
+                comp2, inp2, out2 = router.snapshot()
+                notify_sse(comp2, inp2, out2)
+            except Exception:
+                pass
 
         router._notify = _notify_with_bt
 
@@ -213,10 +221,17 @@ class HIDProxDaemon:
 
         self._log.info("All subsystems started.")
 
+        # 6. Start Web UI (if enabled)
+        if self._web_ui:
+            self._log.info("Starting WebUI…")
+            self._web_ui.start()
+
     # ── shutdown ──────────────────────────────────────────────────────────────
 
     def _stop_all(self) -> None:
         self._log.info("Stopping subsystems…")
+        if self._web_ui:
+            self._web_ui.stop()
         self._gpio.stop()
         self._usb_kbd.stop()
         self._bt_in.stop()

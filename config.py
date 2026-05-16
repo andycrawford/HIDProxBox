@@ -128,6 +128,11 @@ MACROS: Dict[str, List[bytes]] = {
 MACRO_KEY_HOLD_S    = 0.050
 MACRO_KEY_GAP_S     = 0.020
 
+# ── Web UI ────────────────────────────────────────────────────────────────────
+WEB_UI_ENABLED      = True
+WEB_UI_HOST         = "0.0.0.0"
+WEB_UI_PORT         = 8080
+
 # ── Report Queue ──────────────────────────────────────────────────────────────
 REPORT_QUEUE_SIZE   = 256
 
