@@ -156,6 +156,37 @@ class HIDProxDaemon:
         self._log.info("Signal %s received — shutting down.", signal.Signals(signum).name)
         self._stop_event.set()
 
+    # ── router wiring ─────────────────────────────────────────────────────────
+
+    def _wire_router(self, router: Router) -> None:
+        """
+        Attach all sinks, back-references, and callbacks to a Router instance.
+        Called from both _start_all() and the watchdog restart block so that
+        a restarted Router is fully wired identically to the original.
+        """
+        # Output sinks
+        router.set_usb_sink(self._writer.write)
+        router.set_bt_sink(self._bt_out.send)
+
+        # Back-references so GPIOWatcher can trigger BT pairing after restart
+        router._bt_listener = self._bt_in
+        router._bt_output   = self._bt_out
+
+        # State-change hook: keep BTOutput slot in sync + GPIO LED updates
+        gpio = self._gpio
+
+        def _notify_with_bt(*args, **kwargs):
+            router._orig_notify(*args, **kwargs)
+            computer, _, out_mode = router.snapshot()
+            if out_mode == OutputMode.BLUETOOTH:
+                self._bt_out.set_active_slot(computer)
+
+        router._orig_notify = router._notify
+        router._notify      = _notify_with_bt
+
+        # GPIO state-change callback for LED updates
+        router.set_on_state_change(gpio._on_state_change)
+
     # ── startup ───────────────────────────────────────────────────────────────
 
     def _start_all(self) -> None:
@@ -163,22 +194,10 @@ class HIDProxDaemon:
         self._log.info("Opening CH552T serial links…")
         self._writer.open()
 
-        # 2. Wire Router sinks
-        self._router.set_usb_sink(self._writer.write)
-        self._router.set_bt_sink(self._bt_out.send)
+        # 2. Wire Router sinks, back-references, and callbacks
+        self._wire_router(self._router)
 
-        # 3. Hook Router state changes → BTOutput slot tracking
-        _orig_notify = self._router._notify
-
-        def _notify_with_bt(*args, **kwargs):
-            _orig_notify(*args, **kwargs)
-            computer, _, out_mode = self._router.snapshot()
-            if out_mode == OutputMode.BLUETOOTH:
-                self._bt_out.set_active_slot(computer)
-
-        self._router._notify = _notify_with_bt
-
-        # 4. Start threads (order: router first, then sources, then GPIO)
+        # 3. Start threads (order: router first, then sources, then GPIO)
         self._log.info("Starting Router…")
         self._router.start()
 
@@ -223,12 +242,10 @@ class HIDProxDaemon:
                 self._log.error("Router thread died — restarting.")
                 try:
                     self._router = Router()
-                    self._router.set_usb_sink(self._writer.write)
-                    self._router.set_bt_sink(self._bt_out.send)
+                    self._wire_router(self._router)
                     self._router.start()
-                    # Re-wire GPIO
+                    # Point GPIO at the new router instance
                     self._gpio._router = self._router
-                    self._router.set_on_state_change(self._gpio._on_state_change)
                 except Exception as exc:
                     self._log.critical("Cannot restart Router: %s", exc)
                     return 1
